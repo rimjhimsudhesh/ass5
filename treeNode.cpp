@@ -1,3 +1,6 @@
+#include "threadedTree.h"
+#include <iostream>
+
 struct TreeNode {
     int value;
     TreeNode* left;

@@ -25,8 +25,10 @@ class treeNode {
         treeNode* left;
         // Pointer to the right child OR to a parent if isLeaf() is true
         treeNode* right;
-        // True if the treeNode is a leaf AND is not the final leaf in the tree
-        bool threaded;
+        // True if left pointer holds the inorder predecessor
+        bool leftThread;
+        // True if right pointer holds the inorder successor
+        bool rightThread;
         // Has the value of the node 
         int val;
         

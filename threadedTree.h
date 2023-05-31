@@ -25,10 +25,8 @@ class treeNode {
         treeNode* left;
         // Pointer to the right child OR to a parent if isLeaf() is true
         treeNode* right;
-        // True if left pointer holds the inorder predecessor
-        bool leftThread;
-        // True if right pointer holds the inorder successor
-        bool rightThread;
+        // True if the treeNode is a leaf AND is not the final leaf in the tree
+        bool threaded;
         // Has the value of the node 
         int val;
         
@@ -55,14 +53,16 @@ class threadedTree{
         bool isEmpty();
         // Returns the height of the tree
         int getHeight();
+        // Returns true if there is a threaded connection to the in-order successor
+        bool isThreaded();
     private:
         // Contains the height of the tree
         int height;
-         // Pointer to the root of the tree
+        // Pointer to the root of the tree
         treeNode* root;
 
         // Removes all treeNodes from the threadedTree
-        void clear();
+        void clear(treeNode* node);
         // Takes the current treeNode and creates a thread to the next largest value
         treeNode* nextThread(const treeNode* current);
 };

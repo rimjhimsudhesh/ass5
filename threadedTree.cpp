@@ -94,7 +94,65 @@ bool threadedTree::contains(int val) const{
 }
 
 void threadedTree::add(int val){
-    // i plan to start this 
+    addHelper(root, val); 
+}
+
+void threadedTree::addHelper(treeNode *node, int val){
+    treeNode* par = nullptr;
+    treeNode* ptr = root;
+
+
+    while(ptr != null){
+        par = ptr;
+
+        if(val < ptr -> val){
+            if(ptr -> threaded == false){
+                ptr = ptr -> left;
+            }
+
+            else{
+                break;
+            }
+        }
+
+        else{
+            if(ptr -> threaded == false){
+                ptr = ptr -> right;
+            }
+
+            else{
+                break;
+            }
+        }
+
+        treeNode *tmp = new treeNode;
+        tmp -> val = val;
+        tmp -> threaded = true;
+
+        if(par == null){
+            root = tmp;
+            temp -> left = nullptr;
+            temp -> right = nullptr;
+        }
+
+        else if(val < par -> val){
+            tmp -> left = par -> left;
+            tmp -> right = par;
+            par -> threaded = false;
+            par -> left = tmp;
+        }
+
+        else{
+            tmp -> left = par;
+            tmp -> right = par -> right;
+            par -> threaded = false;
+            par -> right = tmp;
+        }
+
+    }
+    
+    
+
 }
 
 /*

@@ -3,6 +3,17 @@
 
 using namespace std;
 
+
+/*
+ Struct for a treeNode object, the nodes used to hold information in the threadedTree
+ */
+struct treeNode {
+    int val;
+    treeNode* left;
+    treeNode* right;
+    bool threaded;
+}
+
 /*
  Iterates through the threadedTree via inorder traversal and prints each node
  

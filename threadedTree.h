@@ -9,7 +9,7 @@ class Iterator{
     friend class threadedTree;
     
     private:
-        void inorderTraverse();
+        void inorderTraverse(); // can we add a parameter of tree node?
 };
 
 class treeNode {

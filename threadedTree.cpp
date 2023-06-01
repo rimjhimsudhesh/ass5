@@ -1,4 +1,17 @@
 #include "threadedTree.h"
+#include <iostream>
+
+using namespace std;
+
+void Iterator::inorderTraverse(treeNode *node){
+    if (node == nullptr){
+        cout << "";
+    }
+
+    inorderTraverse(node -> left);
+    cout << node -> val << " ";
+    inorderTraverse(node -> right);
+}
 
 threadedTree::threadedTree(int n) : height(0), root(nullptr) {
     root = new treeNode(n, nullptr, nullptr);

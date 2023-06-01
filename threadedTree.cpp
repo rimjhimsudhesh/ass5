@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+ Iterates through the threadedTree via inorder traversal and prints each node
+ 
+ @param node as the current node to print
+ */
 void Iterator::inorderTraverse(treeNode *node){
     if (node == nullptr){
         cout << "";
@@ -13,16 +18,51 @@ void Iterator::inorderTraverse(treeNode *node){
     inorderTraverse(node -> right);
 }
 
-threadedTree::threadedTree(int n) : height(0), root(nullptr) {
-    root = new treeNode(n, nullptr, nullptr);
+/*
+ No parameter constructor for threadedTree class. Creates a nullptr root and does nothing else
+ */
+threadedTree::threadedTree() : height(0), root(nullptr) {
+    root = new treeNode(nullptr, nullptr, nullptr);
 }
 
-// unsure about how to go about this, if you have any idea how to implement this pls feel free to do so
+/*
+ Single variable constructor for the threadedTree class
+ 
+ @param n as the largest number in the tree (1 through n)
+ */
+explicit threadedTree::threadedTree(int n) {
+    root = buildTree(1, n);
+}
+
+/*
+ Copy constructor for threadedTree
+ 
+ @param other as the threadedTree being copied
+ */
 threadedTree::threadedTree(const threadedTree &other){
-    //root = new treeNode(other.val, nullptr, nullptr);
-
+    root = copyTreeNode(other.root);
 }
 
+/*
+ Helper function for copying a threaded tree by recursively creating and copying nodes from original tree
+ 
+ @param node as the treeNode being copied from the original threadedTree
+ @return treeNode pointer creating a copied binary tree
+ */
+treeNode* threadedTree::copyTreeNode(const treeNode* node) {
+    if(node == nullptr) {
+        return nullptr
+    } else {
+        treeNode* newNode = new treeNode(node->val);
+        newNode->left = copyNode(node->left);
+        newNode->right = copyNode(node->right);
+        return newNode;
+    }
+}
+
+/*
+ Destructor for threadedTree class
+ */
 threadedTree::~threadedTree(){
     clear(root);
 }
@@ -106,10 +146,22 @@ bool threadedTree::contains(int val) const{
     return false;
 }
 
+/*
+ Adds a new node to the threadedTree with a given value
+ 
+ @param val as the value for the new node
+ */
 void threadedTree::add(int val){
     addHelper(root, val); 
 }
 
+/*
+ Helper function to add a node to the threadedTree
+ 
+ TODO: Finish this comment section! I don't understand it
+ @param node
+ @param val
+ */
 void threadedTree::addHelper(treeNode *node, int val){
     treeNode* par = nullptr;
     treeNode* ptr = root;
@@ -163,9 +215,6 @@ void threadedTree::addHelper(treeNode *node, int val){
         }
 
     }
-    
-    
-
 }
 
 /*
@@ -228,13 +277,20 @@ treeNode* smallestNode(treeNode* node) {
     return cur;
 }
 
-
+/*
+ Returns the height of the threadedTree
+ 
+ @return height of the tree
+ */
 int threadedTree::getHeight(){
     return height;
 }
 
+/*
+ Returns a boolean value of whether the threadedTree is empty
+ 
+ @return true if threadedTree is empty, false otherwise
+ */
 bool threadedTree::isEmpty(){
     return root == nullptr;
 }
-
-

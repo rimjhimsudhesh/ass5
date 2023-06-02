@@ -4,22 +4,27 @@
 
 using namespace std;
 
+
 class Iterator{
     friend class treeNode;
     friend class threadedTree;
-    
+    public:
+        //void inorderTraverse(threadedTree& tree); // add a parameter for tree node
     private:
-        void inorderTraverse(); // can we add a parameter of tree node?
+        //void inorderHelper(treeNode* node);
 };
+
 
 class treeNode {
     friend ostream& operator<<(ostream& out, const treeNode &Node);
     friend class threadedTree;
+    friend class Iterator;
     public:
+        treeNode();
         // Constructor for the treeNode object
         treeNode(int value, treeNode* left, treeNode* right);
         // Returns true if the treeNode is a leaf, false if it has children
-        bool isLeaf(); 
+        bool isLeaf(const treeNode* node); 
     private:
         // Pointer to the left child OR to a parent is isLeaf() is true
         treeNode* left;
@@ -35,10 +40,12 @@ class treeNode {
 
 class threadedTree{
     // Outputs an entire threadedTree
+    friend class Iterator;
     friend ostream& operator<<(ostream& out, const threadedTree& tree);
     public:
         // Constructor
-        threadedTree(int n);
+        threadedTree();
+        explicit threadedTree(int n);
         // Copy Constructor
         threadedTree(const threadedTree &other);
         // destructor
@@ -55,6 +62,7 @@ class threadedTree{
         int getHeight();
         // Returns true if there is a threaded connection to the in-order successor
         bool isThreaded();
+
     private:
         // Contains the height of the tree
         int height;
@@ -65,6 +73,17 @@ class threadedTree{
         void clear(treeNode* node);
         // Takes the current treeNode and creates a thread to the next largest value
         treeNode* nextThread(const treeNode* current);
+
+        treeNode* copyTreeNode(const treeNode* node);
+
+        void addHelper(treeNode*& node, int val);
+
+        treeNode* removeHelper(treeNode *node, int val);
+
+        treeNode* buildTree(int start, int end);
+
+        treeNode* smallestNode(treeNode* node);
 };
+
 
 #endif

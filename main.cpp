@@ -5,15 +5,19 @@
 using namespace std;
 
 void testThreadedTree() {
-    threadedTree tree(5);
+    threadedTree tree(10);
+
+    tree.inorderTraverse(tree);
 
     // Test adding nodes
-    tree.add(9);
+    tree.add(11);
+    tree.add(12);
     tree.remove(2);
-    tree.remove(1);
+    //tree.remove(1); */
 
     //Iterator iterator;
-    //iterator.inorderTraverse(tree);
+    //inorderTraverse(tree);
+    tree.inorderTraverse(tree);
     
 
     // Test contains() method
@@ -21,7 +25,9 @@ void testThreadedTree() {
     std::cout << "Tree contains 2: " << (tree.contains(2) ? "true" : "false") << std::endl;
     std::cout << "Tree contains 9: " << (tree.contains(9) ? "true" : "false") << std::endl;
     std::cout << "Tree contains 1: " << (tree.contains(1) ? "true" : "false") << std::endl;
-    //cout << "here";
+    std::cout << "Tree contains 11: " << (tree.contains(11) ? "true" : "false") << std::endl;
+    std::cout << "Tree contains 12: " << (tree.contains(12) ? "true" : "false") << std::endl;
+    std::cout << "Tree contains 100: " << (tree.contains(100) ? "true" : "false") << std::endl;//cout << "here";
 
 }
 

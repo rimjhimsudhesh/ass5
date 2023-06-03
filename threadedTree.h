@@ -4,16 +4,7 @@
 
 using namespace std;
 
-
-class Iterator{
-    friend class treeNode;
-    friend class threadedTree;
-    public:
-        //void inorderTraverse(threadedTree& tree); // add a parameter for tree node
-    private:
-        //void inorderHelper(treeNode* node);
-};
-
+class Iterator;
 
 class treeNode {
     friend ostream& operator<<(ostream& out, const treeNode &Node);
@@ -38,11 +29,13 @@ class treeNode {
     
 };
 
+
 class threadedTree{
     // Outputs an entire threadedTree
     friend class Iterator;
     friend ostream& operator<<(ostream& out, const threadedTree& tree);
     public:
+        treeNode* root;
         // Constructor
         threadedTree();
         explicit threadedTree(int n);
@@ -63,11 +56,12 @@ class threadedTree{
         // Returns true if there is a threaded connection to the in-order successor
         bool isThreaded();
 
+
     private:
         // Contains the height of the tree
         int height;
         // Pointer to the root of the tree
-        treeNode* root;
+       
 
         // Removes all treeNodes from the threadedTree
         void clear(treeNode* node);
@@ -76,7 +70,8 @@ class threadedTree{
 
         treeNode* copyTreeNode(const treeNode* node);
 
-        void addHelper(treeNode*& node, int val);
+        
+        void addHelper(treeNode* node, int val);
 
         treeNode* removeHelper(treeNode *node, int val);
 
@@ -84,6 +79,19 @@ class threadedTree{
 
         treeNode* smallestNode(treeNode* node);
 };
+
+class Iterator{
+    friend class treeNode;
+    friend class threadedTree;
+    public:
+
+        //void inorderTraverse();
+        void inorderTraverse(threadedTree& tree); // add a parameter for tree node
+        void inorderHelper(treeNode* node);
+    private:
+        
+};
+
 
 
 #endif

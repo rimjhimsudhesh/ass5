@@ -1,19 +1,31 @@
 #include "threadedTree.h"
 #include <iostream>
+#include <stack>
 
 using namespace std;
 
 
-/*
- Struct for a treeNode object, the nodes used to hold information in the threadedTree
- */
-/* struct treeNode {
-    int val;
-    treeNode* left;
-    treeNode* right;
-    bool threaded;
-}; */
+bool treeNode::isLeaf(const treeNode* node) {
+    if(node == nullptr) {
+        return false;
+    } else if(node->right == nullptr && node->left == nullptr) {
+        return true;
+    } else if(node->threaded && node->left == nullptr) {
+        return true;
+    }
+    return false;
+} 
 
+treeNode::treeNode(int value, treeNode* left, treeNode* right) : val(value), left(left), right(right) {
+    this -> threaded = true;
+}
+
+treeNode::treeNode() {
+}
+
+/*treeNode* threadedTree::threadNodes(treeNode* node) {
+    
+}*/
 
 /*
  Iterates through the threadedTree via inorder traversal and prints each node
@@ -23,18 +35,15 @@ using namespace std;
 
 // NOTE: I couldnt get this to work either for some random reason. When you compile comment this out to test or 
 // you could try to get it working!
-void Iterator::inorderTraverse(threadedTree& tree) {
-    treeNode* cur = tree.root;
-    while(cur->left != nullptr) {
-        cur = cur->left;
-    }
+void threadedTree::inorderTraverse(const threadedTree& tree) {
+    treeNode* cur = smallestNode(tree.root);
     inorderHelper(cur);
 }
 
-void Iterator::inorderHelper(treeNode* node) {
-    while(node->right != nullptr) {
+void threadedTree::inorderHelper(treeNode* node) {
+    while(node->rightThread != nullptr) {
         cout << node->val << ", ";
-        node = node->right;
+        node = node->rightThread;
     }
     cout << node->val << endl;
 }   
@@ -45,12 +54,7 @@ void Iterator::inorderHelper(treeNode* node) {
 
 
 
-treeNode::treeNode(int value, treeNode* left, treeNode* right) : val(value), left(left), right(right) {
-    this -> threaded = true;
-}
 
-treeNode::treeNode() {
-}
 
 /*
  No parameter constructor for threadedTree class. Creates a nullptr root and does nothing else
@@ -65,7 +69,27 @@ threadedTree::threadedTree() : height(0), root(nullptr) {
  @param n as the largest number in the tree (1 through n)
  */
 threadedTree::threadedTree(int n) {
+    //cout << "building tree..." << endl;
     root = buildTree(1, n);
+    //cout << "tree built! starting threading..." << endl;
+    for(int i = 1; i <= n; i++) {
+        treeNode* cur = root;
+        //cout << "root established" << endl;
+        while(cur->val != i) {
+            if(cur->left != nullptr && i < cur->val) {
+                cur = cur->left;
+            } else if(cur->right != nullptr) {
+                cur = cur->right;
+            }
+        }
+        //cout << "while loop done! thread methods beginning..." << endl;
+        if(i != n) {
+            threadRight(cur);
+        } else if(i != 1) {
+            threadLeft(cur);
+        }
+        //cout << "threading complete!" << endl;
+    } 
 }
 
 /*
@@ -115,7 +139,6 @@ treeNode* threadedTree::buildTree(int start, int end) {
     } else {
         int mid = (start + end) / 2;
         treeNode* root = new treeNode(mid, nullptr, nullptr);
-        //root->val = mid;
         root->left = buildTree(start, mid - 1);
         root->right = buildTree(mid + 1, end);
         return root;
@@ -154,13 +177,13 @@ bool threadedTree::contains(int val) const {
         }
 
         if (val < current->val) {
-            if (!current->threaded) {
+            if (!current->leftThread) {
                 current = current->left;
             } else {
                 break;
             }
         } else {
-            if (current->threaded) {
+            if (current->rightThread) {
                 current = current->right;
             } else {
                 current = current->right;
@@ -192,22 +215,27 @@ void threadedTree::add(int val){
  @param node
  @param val
  */
-void threadedTree::addHelper(treeNode* node, int val) {
+treeNode* threadedTree::addHelper(treeNode* node, int val) {
     // Create a new node
-    treeNode* newNode = new treeNode(val, nullptr, nullptr);
-
+    //cout << "created new node" << endl;
     if (node == nullptr) {
+        //cout << "node is nullpointer" << endl;
         // If the tree is empty, make the new node the root
+        //cout << "makes new node" << endl;
+        treeNode* newNode = new treeNode(val, nullptr, nullptr);
         node = newNode;
-        return;
+        //cout << node -> val << endl;
+        return node;
     }
 
-    treeNode* current = node;
-    bool checker = true;
-    while (checker) {
+    //treeNode* current = node;
+    //bool checker = true;
+   /* while (current -> val != val) {
         if (val < current->val) {
+            cout << "entering val less..." << endl;
             // Go to the left subtree
-            if (current->threaded || current->left == nullptr) {
+            /* if (current->leftThread == nullptr) {
+                cout << "entering leftThread "
                 // Insert the new node as the left child
                 newNode->left = current->left;
                 newNode->right = current;
@@ -217,10 +245,10 @@ void threadedTree::addHelper(treeNode* node, int val) {
                 break;
             } else {
                 current = current->left;
-            }
+            } 
         } else {
             // Go to the right subtree
-            if (current->threaded || current->right == nullptr) {
+            if (current->rightThread || current->right == nullptr) {
                 // Insert the new node as the right child
                 newNode->left = current;
                 newNode->right = current->right;
@@ -230,9 +258,60 @@ void threadedTree::addHelper(treeNode* node, int val) {
                 break;
             } else {
                 current = current->right;
-            }
+            } 
         }
-    }
+    } 
+ */
+        
+        if(val < node -> val){
+            //cout << "value is going to left with val: ";
+            if(node->left == nullptr) {
+                node->left = addHelper(node->left, val);
+                treeNode* temp = node->leftThread;
+                node->leftThread = node->left;
+                node->leftThread->rightThread = node;
+                node->leftThread->leftThread = temp;
+            } else {
+                //cout << node->val << endl;
+                node -> left = addHelper(node -> left, val);
+            }
+        } else if(val > node -> val){
+            //cout << "value is going to right with val: ";
+            if(node->right == nullptr) {
+                node->right = addHelper(node->right, val);
+                treeNode* temp = node->rightThread;
+                node->rightThread = node->right;
+                node->rightThread->leftThread = node;
+                node->rightThread->rightThread = temp;
+            } else {
+                //cout << node->val << endl;
+                node -> right = addHelper(node -> right, val);
+            }
+        } else{
+            treeNode* newNode = new treeNode(val, nullptr, nullptr);
+            //cout << "threaded to the TBST" << endl;
+            node -> rightThread -> leftThread = node -> leftThread;
+            newNode -> rightThread = node -> rightThread;
+            node -> leftThread -> rightThread = node -> rightThread;
+            newNode -> leftThread = node;
+            if(node -> left == nullptr){
+                treeNode *temp = node -> right;
+                delete node;
+                return temp;
+            } else if(node -> right == nullptr){
+                treeNode *temp = node -> left;
+                delete node;
+                return temp;
+            }  else{
+                treeNode *temp = smallestNode(node -> right);
+                node -> val = temp -> val;
+                node -> right = addHelper(node -> right, temp -> val);
+
+            }
+        } 
+
+        return node; 
+    
 }
 
 /*
@@ -260,19 +339,33 @@ bool threadedTree::remove(const int val) {
   */
 treeNode* threadedTree::removeHelper(treeNode* node, int val){
     if(val < node->val) {
+        cout << "value less..." << endl;
         node->left = removeHelper(node->left, val);
     } else if(val > node->val) {
+        cout << "value greater..." << endl;
         node->right = removeHelper(node->right, val);
     } else {
+        cout << "value found! threading..." << endl;
+        if(node->rightThread != nullptr) {
+            node->rightThread->leftThread = node->leftThread;
+            cout << "left thread done! beginning right thread..." << endl;
+        }
+        if(node->leftThread != nullptr) {
+            node->leftThread->rightThread = node->rightThread;
+            cout << "right thread done!" << endl;
+        }
         if(node->left == nullptr) {
-            treeNode* temp = node->right;
+            cout << "node left == nullptr" << endl;
+            treeNode* temp = node->right;            
             delete node;
             return temp;
         } else if(node->right == nullptr) {
-            treeNode* temp = node->left;
+            cout << "node right == nullptr" << endl;
+            treeNode* temp = node->left;            
             delete node;
             return temp;
         } else {
+            cout << "finding new node!" << endl;
             treeNode* temp = smallestNode(node->right);
             node->val = temp->val;
             removeHelper(node->right, temp->val);
@@ -313,14 +406,73 @@ bool threadedTree::isEmpty(){
     return root == nullptr;
 }
 
+void threadedTree::threadLeft( treeNode* node) {
+    //cout << "starting thread left..." << endl;
+    /*if(node -> left != nullptr){
+        //cout << "entering with left != nullptr" << endl;
+        treeNode* farRight = node -> left;
+        while(farRight -> right != nullptr) {
+            farRight = farRight -> right;
+        }
 
-bool treeNode::isLeaf(const treeNode* node) {
-    if(node == nullptr) {
-        return false;
-    } else if(node->right == nullptr && node->left == nullptr) {
-        return true;
-    } else if(node->threaded && node->left == nullptr) {
-        return true;
+        node -> leftThread = farRight;
+        //cout << "left thread to farRight done!" << endl;
+    } else if(node->right != nullptr && node != root) {
+        //cout << "entering with right != nullptr" << endl;
+        treeNode* parent = findParent(node -> val);
+        node -> leftThread = parent;
+        // cout << "left thread to parent done!" << endl;
+    }*/
+    int desired = node->val - 1;
+    treeNode* cur = root;
+    while(cur->val != desired) {
+        if(desired < cur->val) {
+            cur = cur->left;
+        } else {
+            cur = cur->right;
+        }
     }
-    return false;
-} 
+    node->leftThread = cur;
+}
+
+void threadedTree::threadRight(treeNode* node) {
+    /*if(node->right != nullptr) {
+        treeNode* farLeft = node->right;
+        while(farLeft->left != nullptr) {
+            farLeft = farLeft->left;
+        }
+        node->rightThread = farLeft;
+    } else if(node->left != nullptr) {
+        treeNode* parent = findParent(node->val);
+        node->rightThread = parent;
+    }
+    */
+    int desired = node->val + 1;
+    treeNode* cur = root;
+    while(cur->val != desired) {
+        if(desired < cur->val) {
+            cur = cur->left;
+        } else {
+            cur = cur->right;
+        }
+    }
+    node->rightThread = cur;
+}
+
+treeNode* threadedTree::findParent(int val) {
+    if(!contains(val)) {
+        return nullptr;
+    }
+    stack<treeNode*> stk;
+    treeNode* cur = root;
+    while(cur->val != val) {
+        stk.push(cur);
+        if(cur->val < val) {
+            cur = cur->right;
+        } else {
+            cur = cur->left;   
+        }
+    }
+    return stk.top();
+}
+

@@ -4,12 +4,13 @@
 
 using namespace std;
 
-class Iterator;
+class threadedTree;
 
 class treeNode {
     friend ostream& operator<<(ostream& out, const treeNode &Node);
     friend class threadedTree;
     friend class Iterator;
+    
     public:
         treeNode();
         // Constructor for the treeNode object
@@ -21,17 +22,19 @@ class treeNode {
         treeNode* left;
         // Pointer to the right child OR to a parent if isLeaf() is true
         treeNode* right;
+        // Pointer to the inorder successor
+        treeNode* rightThread;
+        // Pointer to the inorder predecessor
+        treeNode* leftThread;
         // True if the treeNode is a leaf AND is not the final leaf in the tree
         bool threaded;
         // Has the value of the node 
         int val;
-        
-    
 };
-
 
 class threadedTree{
     // Outputs an entire threadedTree
+    friend class treeNode;
     friend class Iterator;
     friend ostream& operator<<(ostream& out, const threadedTree& tree);
     public:
@@ -54,15 +57,17 @@ class threadedTree{
         // Returns the height of the tree
         int getHeight();
         // Returns true if there is a threaded connection to the in-order successor
-        bool isThreaded();
-
+        treeNode* threadNodes(treeNode *node);
+        
+        void inorderTraverse(const threadedTree& tree); // add a parameter for tree node
+        
+        void inorderHelper(treeNode* node);
 
     private:
         // Contains the height of the tree
         int height;
         // Pointer to the root of the tree
        
-
         // Removes all treeNodes from the threadedTree
         void clear(treeNode* node);
         // Takes the current treeNode and creates a thread to the next largest value
@@ -70,28 +75,21 @@ class threadedTree{
 
         treeNode* copyTreeNode(const treeNode* node);
 
-        
-        void addHelper(treeNode* node, int val);
+        treeNode* addHelper(treeNode* node, int val);
 
         treeNode* removeHelper(treeNode *node, int val);
 
         treeNode* buildTree(int start, int end);
 
         treeNode* smallestNode(treeNode* node);
+
+        void threadLeft( treeNode* node);
+
+        void rethread(const treeNode* argNode);
+
+        void threadRight( treeNode* argNode);
+
+        treeNode* findParent(int val);
 };
-
-class Iterator{
-    friend class treeNode;
-    friend class threadedTree;
-    public:
-
-        //void inorderTraverse();
-        void inorderTraverse(threadedTree& tree); // add a parameter for tree node
-        void inorderHelper(treeNode* node);
-    private:
-        
-};
-
-
 
 #endif

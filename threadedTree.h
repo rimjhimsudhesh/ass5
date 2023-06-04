@@ -301,8 +301,8 @@ bool threadedTree::remove(const int val) {
         return false;
     } else {
         removeHelper(root, val);
-        cout << "traverse in the remove method: ";
-        inorderTraverse();
+        //cout << "traverse in the remove method: ";
+        //inorderTraverse();
         return true;
     }
 }
@@ -325,22 +325,44 @@ treeNode* threadedTree::removeHelper(treeNode* root, int val){
         node->right = removeHelper(node->right, val);
     }else{
         cout << "found node: " << node -> val << endl;
-        inorderTraverse();
-        cout << endl;
+        if(node == root){
+            
+
+        }
+
+        if(node -> left == nullptr && node -> right == nullptr){
+            node -> leftThread -> right = node -> rightThread;
+            node -> leftThread -> rightThread = node -> rightThread;
+
+            inorderTraverse();
+
+            return node;
+        }
+        
         if(node -> right != nullptr){
-            //treeNode *parent = findParent(node -> val);
-            inorderTraverse();
-            cout << endl;
-            node -> leftThread -> right = node -> right;
-            cout << "node -> leftThread -> right: " << node -> leftThread -> right -> val << endl;
-            inorderTraverse(); 
-            cout << endl;
-            node -> right -> leftThread = node -> leftThread;
-            cout << "node -> right -> leftThread: " << node -> right -> leftThread -> val << endl;
-            inorderTraverse();
-            cout << endl;
+            if(node -> leftThread != nullptr){
+                node -> leftThread -> right = node -> right;
+                node -> right -> leftThread = node -> leftThread;
+            }
+
+            else{
+                node -> right -> leftThread = node -> leftThread;
+            }
             return node->right;
         }
+
+        if(node -> left != nullptr){
+            if(node -> rightThread != nullptr){
+                node -> rightThread -> left = node -> left;
+                node -> left -> rightThread = node -> leftThread;
+            }
+
+            else{
+                node -> left -> rightThread = node -> rightThread;
+            }
+        }
+
+        
     }
 
     return nullptr;

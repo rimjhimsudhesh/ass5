@@ -15,8 +15,6 @@ class treeNode {
         treeNode();
         // Constructor for the treeNode object
         treeNode(int value, treeNode* left, treeNode* right);
-        // Returns true if the treeNode is a leaf, false if it has children
-        bool isLeaf(const treeNode* node); 
     private:
         // Pointer to the left child OR to a parent is isLeaf() is true
         treeNode* left;
@@ -63,9 +61,9 @@ class threadedTree{
         // Finds parent of a node
          treeNode* findParent(int val);
         // Find inorder successors of a node
-         treeNode* inorderSuccessor(treeNode* node, treeNode *root);
+         treeNode* inorderSuccessor(treeNode* node, treeNode* root);
         // Find inorder predecessor of a node
-        treeNode* inorderPredecessor(treeNode* node);
+        treeNode* inorderPredecessor(treeNode* node, treeNode* root);
 
     private:
         // Contains the height of the tree

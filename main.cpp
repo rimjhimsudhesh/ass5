@@ -1,5 +1,5 @@
 #include <iostream>
-#include "threadedTree.h" 
+#include "ThreadedTree.h" 
 #include <cassert>
 
 using namespace std;
@@ -7,20 +7,22 @@ using namespace std;
 void testThreadedTree() {
     threadedTree tree(10);
 
-    tree.inorderTraverse(tree);
+    tree.inorderTraverse();
+
+    cout << endl;
 
     // Test adding nodes
+    cout << "\nTesting add method: " << endl;
     tree.add(11);
     tree.add(12);
-    tree.remove(2);
-    //tree.remove(1); */
-
-    //Iterator iterator;
-    //inorderTraverse(tree);
-    tree.inorderTraverse(tree);
+    tree.inorderTraverse();
+    cout << "\nTesting remove method:" << endl;
+    tree.remove(8);
+    tree.inorderTraverse();
     
 
     // Test contains() method
+    cout << endl;
     std::cout << "Tree contains 4: " << (tree.contains(4) ? "true" : "false") << std::endl;
     std::cout << "Tree contains 2: " << (tree.contains(2) ? "true" : "false") << std::endl;
     std::cout << "Tree contains 9: " << (tree.contains(9) ? "true" : "false") << std::endl;
@@ -33,18 +35,5 @@ void testThreadedTree() {
 
 int main() {
     testThreadedTree();
-
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-

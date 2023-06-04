@@ -56,25 +56,27 @@ class threadedTree{
         bool isEmpty();
         // Returns the height of the tree
         int getHeight();
-        // Returns true if there is a threaded connection to the in-order successor
-        treeNode* threadNodes(treeNode *node);
-        
-        void inorderTraverse(const threadedTree& tree); // add a parameter for tree node
-        
+        // Traversing through inorder binary search tree
+        void inorderTraverse(); // add a parameter for tree node
+        // Traversing through with helper method
         void inorderHelper(treeNode* node);
+        // Finds parent of a node
+         treeNode* findParent(int val);
+        // Find inorder successors of a node
+         treeNode* inorderSuccessor(treeNode* node, treeNode *root);
+        // Find inorder predecessor of a node
+        treeNode* inorderPredecessor(treeNode* node);
 
     private:
         // Contains the height of the tree
         int height;
-        // Pointer to the root of the tree
-       
         // Removes all treeNodes from the threadedTree
         void clear(treeNode* node);
         // Takes the current treeNode and creates a thread to the next largest value
         treeNode* nextThread(const treeNode* current);
-
+        // Copies tree node 
         treeNode* copyTreeNode(const treeNode* node);
-
+        // Helper method for the 
         treeNode* addHelper(treeNode* node, int val);
 
         treeNode* removeHelper(treeNode *node, int val);
@@ -85,11 +87,15 @@ class threadedTree{
 
         void threadLeft( treeNode* node);
 
-        void rethread(const treeNode* argNode);
+        void threadNodes(treeNode *node);
 
         void threadRight( treeNode* argNode);
 
-        treeNode* findParent(int val);
+        treeNode* rightMost(treeNode* node);
+
+        treeNode* minValueNode(treeNode* node);
+
+       
 };
 
 #endif

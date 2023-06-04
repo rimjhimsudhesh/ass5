@@ -5,7 +5,7 @@
 using namespace std;
 
 
-bool treeNode::isLeaf(const treeNode* node) {
+/*bool treeNode::isLeaf(const treeNode* node) {
     if(node == nullptr) {
         return false;
     } else if(node->right == nullptr && node->left == nullptr) {
@@ -14,8 +14,15 @@ bool treeNode::isLeaf(const treeNode* node) {
         return true;
     }
     return false;
-} 
+} */
 
+/*
+    Constructor for a treeNode object
+
+    @param value as the value to assign to the treeNode
+    @param left as the address to be assigned to left
+    @param right as the address to be assigned to right
+*/
 treeNode::treeNode(int value, treeNode* left, treeNode* right) : val(value), left(left), right(right) {
     this -> threaded = true;
 }
@@ -23,38 +30,33 @@ treeNode::treeNode(int value, treeNode* left, treeNode* right) : val(value), lef
 treeNode::treeNode() {
 }
 
-/*treeNode* threadedTree::threadNodes(treeNode* node) {
-    
-}*/
-
 /*
  Iterates through the threadedTree via inorder traversal and prints each node
  
  @param node as the current node to print
  */
-
-// NOTE: I couldnt get this to work either for some random reason. When you compile comment this out to test or 
-// you could try to get it working!
 void threadedTree::inorderTraverse() {
     if(root == nullptr) {
         cout << "Tree is empty!" << endl;
         return;
     }
-    treeNode* cur = smallestNode(root);
-    inorderHelper(cur);
+    //reeNode* cur = smallestNode(root);
+    inorderHelper(root);
 }
 
+/*
+    Helper function for inorderTraverse to output the correct values
+
+    @param node as the node currently being output
+*/
 void threadedTree::inorderHelper(treeNode* node) {
-    if (node != nullptr) {
-        // Traverse the left subtree
-        inorderHelper(node->left);
+    if (node == nullptr) {
+        return;
+    }
 
-        // Visit the current node
-        std::cout << node->val << " ";
-
-        // Traverse the right subtree
-        inorderHelper(node->right);
-    }   
+    inorderHelper(node->left);
+    cout << node->val << " ";
+    inorderHelper(node->right); 
 }
 
 
@@ -79,6 +81,11 @@ threadedTree::threadedTree(int n) {
     cout << "****** DONE threadednodes" << endl;
 }
 
+/*
+    Threads all nodes in the tree together
+
+    @param inputNode as the beginning node to start threading
+*/
 void threadedTree::threadNodes(treeNode *inputNode){
     treeNode *currentNode;
     currentNode = inputNode;
@@ -118,11 +125,11 @@ void threadedTree::threadNodes(treeNode *inputNode){
         cout << "found place to thread" << endl;
         if(currentNode != largestValue){
         cout << "threading right..." << endl;
-           currentNode -> rightThread = inorderSuccessor(currentNode);
+           currentNode -> rightThread = inorderSuccessor(currentNode, false);
+           cout << "right thread value" << currentNode -> rightThread -> val << endl;
         }
     }
-
-    
+ 
 }
 
 /*
@@ -473,23 +480,12 @@ bool threadedTree::isEmpty(){
     return root == nullptr;
 }
 
-void threadedTree::threadLeft( treeNode* node) {
-    //cout << "starting thread left..." << endl;
-    /*if(node -> left != nullptr){
-        //cout << "entering with left != nullptr" << endl;
-        treeNode* farRight = node -> left;
-        while(farRight -> right != nullptr) {
-            farRight = farRight -> right;
-        }
+/*
+    Creates a thread to the node on the left for a given node
 
-        node -> leftThread = farRight;
-        //cout << "left thread to farRight done!" << endl;
-    } else if(node->right != nullptr && node != root) {
-        //cout << "entering with right != nullptr" << endl;
-        treeNode* parent = findParent(node -> val);
-        node -> leftThread = parent;
-        // cout << "left thread to parent done!" << endl;
-    }*/
+    @param node as the node being threaded
+*/
+void threadedTree::threadLeft( treeNode* node) {
     int desired = node->val - 1;
     treeNode* cur = root;
     while(cur->val != desired) {
@@ -504,6 +500,11 @@ void threadedTree::threadLeft( treeNode* node) {
     
 }
 
+/*
+    Creates a thread to the node on the right for a given node
+
+    @param node as the node being threaded
+*/
 void threadedTree::threadRight(treeNode* node) {
     /*if(node->right != nullptr) {
         treeNode* farLeft = node->right;
@@ -530,25 +531,74 @@ void threadedTree::threadRight(treeNode* node) {
    
 }
 
-treeNode* threadedTree::inorderSuccessor(treeNode* node) {
-    if (node == nullptr) {
-    return nullptr;
-  }
-  if (node->right != nullptr) {
-    return smallestNode(node->right);
-  }
-  treeNode* current = node;
-  treeNode* parent = findParent(current->val);
-  while (current != nullptr && current->right != node) {
-    current = parent;
-    if (current != nullptr) {
-      parent = findParent(current->val);
-    }
-  }
+/*
+    Finds the inorder successor for a given node
 
-  return current;
+    @param node as the treeNode that is being linked to its successor
+    @return treeNode pointer pointing to the successor
+*/
+treeNode* threadedTree::inorderSuccessor(treeNode* node, bool matchFound) {
+    cout << "***ENTERING SUCCESSOR***" << endl;
+    /*
+    stack<treeNode*> stk;
+    treeNode* cur = root;
+    while(cur != nullptr || !stk.empty()) {
+        while(cur != nullptr) {
+            stk.push(cur);
+            cur = cur->left;
+        }
+        cur = stk.top();
+        stk.pop();
+
+        if(current == node) {
+            if(current->right != nullptr) {
+                return current->right;
+            } else {
+                while(!stk.empty() && !stk.top()->rightThread) {
+                    cur = stk.top();
+                    stk.pop();
+                }
+                if(!stk.empty()) {
+                    return stk.top()->right;
+                } else {
+                    return nullptr;
+                }
+            }
+        }
+    }
+    return nullptr;
+    */
+
+    if (node == nullptr) {
+        return node;
+    }
+
+    if (matchFound)
+    {
+        cout << "successor is: " << node -> val << endl;
+        return node;
+    }
+    
+    if(root -> val == node -> val){
+        matchFound = true;
+    }
+    inorderSuccessor(node->left, matchFound);
+   
+    cout << root->val << " ";
+    
+    inorderSuccessor(node->right, matchFound);
+    
+    cout << "***EXITING SUCCESSOR***" << endl;
+    return node;
+    
 }
 
+/*
+    Finds the inorder predecessor of a given node
+
+    @param node as the treeNode that is being linked to its predecessor
+    @return treeNode pointer pointing to the predecessor
+*/
 treeNode* threadedTree::inorderPredecessor(treeNode* node) {
     if(node->left != nullptr) {
         return smallestNode(node->left);
@@ -559,40 +609,17 @@ treeNode* threadedTree::inorderPredecessor(treeNode* node) {
             cur = parent;
         }
         cout << "parent: " << parent -> val << endl;
-        return parent;
+        return parent;        
 
-        
     }
-    /* cout << "inside predecessor" << endl;
-    if (node == nullptr) {
-    return nullptr;
-  }
-
-  // If the node has a left child, then the inorder predecessor is the rightmost child of the left child.
-  if (node->left != nullptr) {
-    cout << rightMost(node -> left) << endl;
-    return rightMost(node->left);
-  }
-
-  // Otherwise, the inorder predecessor is the first ancestor of the node whose left child is the node itself.
-  treeNode* current = node;
-  treeNode* parent = findParent(current->val);
-  while (current != nullptr && current->left != node) {
-    current = parent;
-    cout << "current is " << current-> val << endl;
-    //cout << " parent is " << parent-> val << endl;
-    if (current != nullptr) {
-        cout << "parent is " << current-> val << endl;
-        parent = findParent(current->val);
-    }
-  }
-
-  cout << "outside predecessor" << endl;
-
-  cout << "current is " << current-> val << endl;
-  return current; */
 }
 
+/*
+    Finds the rightmost node in the tree
+
+    @param node as the node being checked
+    @return treeNode pointer of the rightmost node
+*/
 treeNode* threadedTree::rightMost(treeNode* node) {
     if (node == nullptr)
         return nullptr;
@@ -602,6 +629,12 @@ treeNode* threadedTree::rightMost(treeNode* node) {
     return node;
 }
 
+/*
+    Finds the parent of a given node
+
+    @param val as the value being sent from the node
+    @return the parent treeNode pointer
+*/
 treeNode* threadedTree::findParent(int val) {
     if(!contains(val)) {
         return nullptr;
@@ -618,4 +651,3 @@ treeNode* threadedTree::findParent(int val) {
     }
     return stk.top();    
 }
-

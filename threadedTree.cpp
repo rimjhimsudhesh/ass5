@@ -50,12 +50,12 @@ void threadedTree::inorderHelper(treeNode* node) {
         inorderHelper(node->left);
 
         // Visit the current node
-        cout << node->val << " ";
+        std::cout << node->val << " ";
 
         // Traverse the right subtree
         inorderHelper(node->right);
-}   
-
+    }   
+}
 
 
 /*

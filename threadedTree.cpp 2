@@ -1,4 +1,4 @@
-#include "threadedTree.h"
+#include "ThreadedTree.h"
 #include <iostream>
 #include <stack>
 
@@ -93,7 +93,7 @@ void threadedTree::threadNodes(treeNode *inputNode){
         //cout << "found place to thread" << endl;
         if(currentNode != smallestValue){
             //cout << "threading left..." << endl;
-            currentNode -> leftThread = inorderPredecessor(currentNode);
+            currentNode -> leftThread = inorderPredecessor(currentNode, root);
             //cout << "left thread value " << currentNode -> leftThread -> val << endl;
         }
     }
@@ -207,7 +207,7 @@ bool threadedTree::contains(int val) const {
                 break;
             }
         } else {
-            if (current->rightThread) {
+            if (!current->rightThread) {
                 current = current->right;
             } else {
                 current = current->right;
@@ -313,58 +313,68 @@ bool threadedTree::remove(const int val) {
   @param val as the value being searched for
   @return treeNode pointer to replace   deleted node
   */
-treeNode* threadedTree::removeHelper(treeNode* root, int val){
-    treeNode* node = root;
+treeNode* threadedTree::removeHelper(treeNode* node, int val){
+    if(node == nullptr) {
+        return nullptr;
+    }
     if(val < node->val) {
-        cout << "Going left" << endl;
         node->left = removeHelper(node->left, val);
     } else if(val > node->val) {
-        cout << "Going right" << endl;
         node->right = removeHelper(node->right, val);
-    }else{
-        cout << "found node: " << node -> val << endl;
+    } else {
         if(node == root){
-
+            if(node->left == nullptr && node->right == nullptr) {
+                delete root;
+                root = nullptr;
+                return nullptr;
+            } else if(node->left != nullptr && node->right == nullptr) {
+                treeNode* nextRoot = node->left;
+                nextRoot->rightThread = node->rightThread;
+                delete root;
+                root = nextRoot;
+                return root;
+            } else if(node->left == nullptr && node->right != nullptr) {
+                treeNode* nextRoot = node->right;
+                nextRoot->leftThread = node->leftThread;
+                delete root;
+                root = nextRoot;
+                return root;
+            } else {
+                treeNode* nextRoot = inorderSuccessor(node, root);
+                removeHelper(root, nextRoot->val);
+                root->val = nextRoot->val;
+                return root;
+            }
         }
+        // Leaf Removal
         if(node -> left == nullptr && node -> right == nullptr){
-            node -> leftThread -> right = node -> rightThread;
-            node -> leftThread -> rightThread = node -> rightThread;
-
-            inorderTraverse();
-
-            return node;
+            if(node->leftThread != nullptr) {
+                node -> leftThread -> right = node -> right;
+                node -> leftThread -> rightThread = node -> rightThread;
+            }
+            if(node->rightThread != nullptr) {
+                node->rightThread->left = node->left;
+                node->rightThread->leftThread = node->leftThread;
+            }
+            delete node;
+            return nullptr;
         }
-        
+
+        // Node w right child removal
         if(node -> right != nullptr){
             if(node -> leftThread != nullptr){
                 node -> leftThread -> right = node -> right;
+                treeNode* next = inorderPredecessor(node, root);
+                if(next != nullptr) {
+                    next->leftThread = node->leftThread;
+                }
+            } else {
                 node -> right -> leftThread = node -> leftThread;
             }
-
-            else{
-                node -> right -> leftThread = node -> leftThread;
-            }
-            inorderTraverse();
             return node->right;
         }
-
-        /* if(node -> left != nullptr){
-            if(node -> rightThread != nullptr){
-                node -> rightThread -> left = node -> left;
-                node -> left -> rightThread = node -> leftThread;
-            }
-
-            else{
-                node -> left -> rightThread = node -> rightThread;
-            }
-            inorderTraverse();
-        } */
-
-        
     }
-
-    return nullptr;
-    
+    return node;
 }
 
 
@@ -453,8 +463,8 @@ treeNode* threadedTree:: minValueNode(treeNode* node) {
     @param node as the treeNode that is being linked to its successor
     @return treeNode pointer pointing to the successor
 */
-treeNode* threadedTree::inorderSuccessor(treeNode* node, treeNode *root) {
-    //cout << "***** ENTERING SUCCESSOR *****" << endl;
+treeNode* threadedTree::inorderSuccessor(treeNode* node, treeNode* root) {
+    cout << "***** ENTERING SUCCESSOR *****" << endl;
     if (node->right != nullptr) {
         // If right child exists, find the leftmost node in the right subtree
         return smallestNode(node->right);
@@ -472,8 +482,8 @@ treeNode* threadedTree::inorderSuccessor(treeNode* node, treeNode *root) {
             }
         }
 
-        //cout << "successor is " << successor -> val << endl;
-        //cout << "***** EXITING SUCCESSOR *****" << endl;
+        cout << "successor is " << successor -> val << endl;
+        cout << "***** EXITING SUCCESSOR *****" << endl;
         return successor;
     
     
@@ -488,7 +498,7 @@ treeNode* threadedTree::inorderSuccessor(treeNode* node, treeNode *root) {
     @param node as the treeNode that is being linked to its predecessor
     @return treeNode pointer pointing to the predecessor
 */
-treeNode* threadedTree::inorderPredecessor(treeNode* node) {
+treeNode* threadedTree::inorderPredecessor(treeNode* node, treeNode* root) {
     if(node->left != nullptr) {
         return smallestNode(node->left);
     } else {

@@ -338,6 +338,7 @@ bool threadedTree::remove(const int val) {
   @return treeNode pointer to replace deleted node
   */
 treeNode* threadedTree::removeHelper(treeNode* node, int val){
+    treeNode* threadedTree::removeHelper(treeNode* node, int val){
     if(val < node->val) {
         cout << "value less..." << endl;
         node->left = removeHelper(node->left, val);
@@ -345,33 +346,85 @@ treeNode* threadedTree::removeHelper(treeNode* node, int val){
         cout << "value greater..." << endl;
         node->right = removeHelper(node->right, val);
     } else {
-        cout << "value found! threading..." << endl;
+        // Case 1: If node is a leaf 🌱
+        if(node -> left == nullptr && node -> right == nullptr){
+            delete node;
+            node = nullptr;
+            return node;
+        }
+        
+        // Case 2: one child
+        else if(node -> left == nullptr){
+            treeNode *parent = findParent(node -> val);
+            parent -> left = node -> leftThread;
+            node -> leftThread -> rightThread = parent;
+            delete node;
+            return parent;
+        }
+
+        else if(node -> right == nullptr){
+            treeNode *parent = findParent(node -> val);
+            parent -> left = node -> leftThread;
+            node -> leftThread -> rightThread = parent;
+            delete node;
+            return parent;
+        }
+
+        // Case 3: two children
+        else{
+            treeNode *temp = smallestNode(node -> right);
+            node -> val = temp -> val;
+            node -> right = addHelper(node -> right, temp -> val);
+
+        }
+
+
+
+
+
+        /* cout << "value found! threading..." << endl;
+        if (node->left == nullptr && node->right == nullptr) {
+            cout << "node is a leaf" << endl;
+            delete node;
+            return nullptr;
+        }
+        if(node->right == nullptr) {
+            treeNode* temp = node->left;            
+            delete node;
+            return temp; 
+        }
         if(node->rightThread != nullptr) {
-            node->rightThread->leftThread = node->leftThread;
+            cout << "value is: " << val << endl;
+            treeNode *par = findParent(node -> val);
+            cout << "parent val is: " << par -> val << endl;
+            par -> leftThread = node -> leftThread;
+            node ->leftThread->rightThread = par;
             cout << "left thread done! beginning right thread..." << endl;
         }
-        if(node->leftThread != nullptr) {
-            node->leftThread->rightThread = node->rightThread;
-            cout << "right thread done!" << endl;
-        }
+
         if(node->left == nullptr) {
             cout << "node left == nullptr" << endl;
             treeNode* temp = node->right;            
             delete node;
             return temp;
-        } else if(node->right == nullptr) {
-            cout << "node right == nullptr" << endl;
-            treeNode* temp = node->left;            
-            delete node;
-            return temp;
-        } else {
+        } 
+        if(node->leftThread != nullptr) {
+            treeNode *par = findParent(node -> val);
+            node -> leftThread -> rightThread = par;
+            cout << "right thread done!" << endl;
+        }
+
+        else {
             cout << "finding new node!" << endl;
             treeNode* temp = smallestNode(node->right);
             node->val = temp->val;
-            removeHelper(node->right, temp->val);
-        }
+            node -> right = removeHelper(node->right, temp->val);
+        } */
     }
-    return node;
+    return node;  
+
+   
+}
 }
 
 /*

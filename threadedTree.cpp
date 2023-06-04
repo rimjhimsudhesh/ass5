@@ -311,19 +311,58 @@ bool threadedTree::remove(const int val) {
   @param val as the value being searched for
   @return treeNode pointer to replace deleted node
   */
-treeNode* threadedTree::removeHelper(treeNode* node, int val){
+treeNode* threadedTree::removeHelper(treeNode* root, int val){
+    treeNode* node = root;
     if(val < node->val) {
+        cout << "Going left" << endl;
         node->left = removeHelper(node->left, val);
     } else if(val > node->val) {
+        cout << "Going right" << endl;
         node->right = removeHelper(node->right, val);
     }else{
-        if(node -> right != nullptr){
-            treeNode *parent = findParent(node -> val);
-            parent -> right = node -> right;
-            node -> right -> leftThread = parent;
+        cout << "found node: " << node -> val << endl;
+        if(node == root){
+
         }
+        if(node -> left == nullptr && node -> right == nullptr){
+            node -> leftThread -> right = node -> rightThread;
+            node -> leftThread -> rightThread = node -> rightThread;
+
+            inorderTraverse();
+
+            return node;
+        } 
+        
+        if(node -> right != nullptr){
+            if(node -> leftThread != nullptr){
+                node -> leftThread -> right = node -> right;
+                node -> right -> leftThread = node -> leftThread;
+            }
+
+            else{
+                node -> right -> leftThread = node -> leftThread;
+            }
+            inorderTraverse();
+            return node->right;
+        }
+
+        /* if(node -> left != nullptr){
+            if(node -> rightThread != nullptr){
+                node -> rightThread -> left = node -> left;
+                node -> left -> rightThread = node -> leftThread;
+            }
+
+            else{
+                node -> left -> rightThread = node -> rightThread;
+            }
+            inorderTraverse();
+        } */
+
+        
     }
-    return node;
+
+    return nullptr;
+    
 }
 
 
